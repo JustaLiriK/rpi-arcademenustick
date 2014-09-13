@@ -1,0 +1,21 @@
+# Version 0.3.1
+#memo index  boutons start et select dans jstest ne pas decommenter
+#START=8	
+#SELECT=9
+#memo index axes verticaux et horizontaux dans jstest  ne pas decommenter
+#VERTICAL=5
+#HORIZONTAL=4
+
+function joy
+{
+jstest --event /dev/input/js0 | sed  -e 's@type 1@interupt@g' \
+-e 's@type 2@axe@g' -e 's@Event:@  @g' \
+-e 's@number 8,@start@g' -e 's@number 9,@select@g' \
+-e 's@number 4,@horiz@g' -e 's@number 5,@vert@g' \
+-e 's@value 0@rel@g' -e 's@value 1@enf@g' \
+-e 's@value 32767@pos@g' -e 's@value -32767@neg@g' \
+-e '/interupt29/,/interupt30/d' \
+-e '/interupt30/,/axe/d' -e '1,6d'
+}
+
+joy  #will show joystick entries as they come. todo : grab them and sort as argument
