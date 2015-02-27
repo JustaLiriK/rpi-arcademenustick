@@ -1,8 +1,10 @@
 #!/bin/bash
+#version 0.6
+#parcours du fichier cfg à la recherche de l'émulateur
 N=1
 for NBR in "EMU1-NAME" "EMU2-NAME" "EMU3-NAME" "EMU4-NAME"
 do
-NAME=$(grep -w "${NBR}" gui.cfg | cut -c 11-)
+NAME=$(grep -w "${NBR}" gui.cfg | cut -c 11-) #on suprrime le préfixe
 if test -z $NAME
         then break
         fi
@@ -12,18 +14,18 @@ done
 emul=("$EMU1" "$EMU2" "$EMU3" "$EMU4")
 
 dialog  --no-cancel --no-ok --menu "Choix de l'EMULATEUR" 10 30 4 1 "$EMU1" 2 "$EMU2"\
- 3 "$EMU3" 4 "$EMU4" 2>dialog.tmp
+ 3 "$EMU3" 4 "$EMU4" 2>dialog.tmp #selection sur la sortie erreur avec dialog (tag seulement)
 P=$(cat dialog.tmp)
 function romlist()
 {
 R=$(grep ROMPATH$P gui.cfg |cut -c 10-)
 
-ls --format single-column $R
+ls --format single-column $R # créeons une liste d'une colonne
 }
 romlist $P >romlist.tmp
 clean()
 {
-cln=$(grep -w 'zip\|gba$' romlist.tmp)
+cln=$(grep -w 'zip\|gba$' romlist.tmp) #ajouter ici les extensions que vous filtrez ( zip|gba|nes ect...)
 echo  "$cln"
 }
 
@@ -42,16 +44,13 @@ echo $nl
 }
 t=1
 c=`compte`
-while [ $c -ge 1 ] || break
+while [ $c -ge 1 ] || break # pas plus haut que le bord :)
 do 
  tail=$(tail --lines="$c" clean.tmp) && echo -e  "$tail" 1>clean.tmp
  item=`showline`
-  echo  $t $item 1>>array.tmp
- #cat array.tmp | tr -s "\r" 1>array.tmp
-
+  echo  $t $item 1>>array.tmp #on génère la liste tag/item pour dialog
  let "c=$c-1"
  let "t=$t+1"
-
 done
 array()
 { 
@@ -73,7 +72,7 @@ emupath=$(grep -w EMU$P-PATH gui.cfg | cut -c 11- )
 #echo $emupath 
 rompath=$(grep -w ROMPATH$P gui.cfg | cut -c 10- )
 #echo $rompath
-rm romlist.tmp clean.tmp array.tmp dialog.tmp
+rm romlist.tmp clean.tmp array.tmp dialog.tmp # un peu de ménage
 
 $emupath./$emulator $rompath$r &
 #$emupath./$emulator $r
