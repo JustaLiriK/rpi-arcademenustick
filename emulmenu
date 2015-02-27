@@ -9,12 +9,11 @@ if test -z $NAME
 export EMU$N=$NAME
 let N=$N+1
 done
-#echo "EMU1" "EMU2" "EMU3" "EMU4"
+emul=("$EMU1" "$EMU2" "$EMU3" "$EMU4")
 
 dialog  --no-cancel --no-ok --menu "Choix de l'EMULATEUR" 10 30 4 1 "$EMU1" 2 "$EMU2"\
  3 "$EMU3" 4 "$EMU4" 2>dialog.tmp
 P=$(cat dialog.tmp)
-
 function romlist()
 {
 R=$(grep ROMPATH$P gui.cfg |cut -c 10-)
@@ -45,9 +44,10 @@ t=1
 c=`compte`
 while [ $c -ge 1 ] || break
 do 
- tail=$(tail --lines="$c" clean.tmp)  ;echo -e "$tail \r" 1>clean.tmp
+ tail=$(tail --lines="$c" clean.tmp) && echo -e  "$tail" 1>clean.tmp
  item=`showline`
-  echo  $t $item  1>>array.tmp
+  echo  $t $item 1>>array.tmp
+ #cat array.tmp | tr -s "\r" 1>array.tmp
 
  let "c=$c-1"
  let "t=$t+1"
@@ -57,9 +57,24 @@ array()
 { 
 cat array.tmp
 }
-list=$(cat array.tmp)
+list=$(array)
 echo $list
 dialog --clear
 dialog  --no-cancel --no-ok --menu "Choix de la rom" 20 50 10 $list 2>dialog.tmp
+index=$(cat dialog.tmp)
+romg()
+{ 
+grep -w "$index" array.tmp | cut -d' ' -f2
+}
+r=$(romg)
+let I=$P-1
+emulator=${emul[$I]} 
+emupath=$(grep -w EMU$P-PATH gui.cfg | cut -c 11- )
+#echo $emupath 
+rompath=$(grep -w ROMPATH$P gui.cfg | cut -c 10- )
+#echo $rompath
+rm romlist.tmp clean.tmp array.tmp dialog.tmp
 
-rm romlist.tmp clean.tmp array.tmp
+$emupath./$emulator $rompath$r &
+#$emupath./$emulator $r
+exit 0
