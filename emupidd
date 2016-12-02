@@ -1,0 +1,17 @@
+#!/bin/bash 
+### BEGIN INIT INFO
+# Provides:          emupidd
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start emupidd at boot time
+# Description:  Watch for given emulator stop then launch selection menu.
+### END INIT INFO
+GREPTERM=$( ps -e | grep -w '$EMUPID') ;1>/dev/null 2>&1
+if test -n "$GREPTERM" 
+then
+  killall joy2key ; kill $PIDSHELL ; killall emulmenu
+echo "done"
+fi
+exit 0

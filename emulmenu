@@ -1,8 +1,8 @@
 #!/bin/bash
-#version 0.6
-#parcours du fichier cfg à la recherche de l'émulateur
+#version 0.9
+#parcours du fichier cfg à la recherche de l'émulateur 
 N=1
-for NBR in "EMU1-NAME" "EMU2-NAME" "EMU3-NAME" "EMU4-NAME"
+for NBR in "EMU1-NAME" "EMU2-NAME" "EMU3-NAME" "EMU4-NAME" "EMU5-NAME" 
 do
 NAME=$(grep -w "${NBR}" gui.cfg | cut -c 11-) #on suprrime le préfixe
 if test -z $NAME
@@ -11,11 +11,16 @@ if test -z $NAME
 export EMU$N=$NAME
 let N=$N+1
 done
-emul=("$EMU1" "$EMU2" "$EMU3" "$EMU4")
+emul=("$EMU1" "$EMU2" "$EMU3" "$EMU4" "$EMU5")
 
-dialog  --no-cancel --no-ok --menu "Choix de l'EMULATEUR" 10 30 4 1 "$EMU1" 2 "$EMU2"\
- 3 "$EMU3" 4 "$EMU4" 2>dialog.tmp #selection sur la sortie erreur avec dialog (tag seulement)
+dialog  --no-cancel --no-ok --menu "Choix de l'EMULATEUR" 10 30 4 \
+1 "$EMU1" 2 "$EMU2"\
+ 3 "$EMU3" 4 "$EMU4" 5 "$EMU5"\
+ 2>dialog.tmp #selection sur la sortie erreur avec dialog (tag seulement)
+
 P=$(cat dialog.tmp)
+if [[ $P != "5" ]]
+then
 function romlist()
 {
 R=$(grep ROMPATH$P gui.cfg |cut -c 10-)
@@ -25,14 +30,14 @@ ls --format single-column $R # créeons une liste d'une colonne
 romlist $P >romlist.tmp
 clean()
 {
-cln=$(grep -w 'zip\|gba$' romlist.tmp) #ajouter ici les extensions que vous filtrez ( zip|gba|nes ect...)
+cln=$(grep -w 'zip\|fba\|sfc$' romlist.tmp) #ajouter ici les extensions que vous filtrez ( zip|gba|nes ect...)
 echo  "$cln"
 }
 
 clean >clean.tmp
 compte()
 {
-compte=$(grep -w 'zip\|gba$' clean.tmp |wc -l)
+compte=$(grep -w 'zip\|sfc$' clean.tmp |wc -l)
 echo $compte
 
 }
@@ -53,8 +58,8 @@ do
  let "t=$t+1"
 done
 array()
-{ 
-cat array.tmp
+{
+ [[ -e array.tmp ]] && cat array.tmp 
 }
 list=$(array)
 echo $list
@@ -72,8 +77,18 @@ emupath=$(grep -w EMU$P-PATH gui.cfg | cut -c 11- )
 #echo $emupath 
 rompath=$(grep -w ROMPATH$P gui.cfg | cut -c 10- )
 #echo $rompath
-rm romlist.tmp clean.tmp array.tmp dialog.tmp # un peu de ménage
-
-$emupath./$emulator $rompath$r &
-#$emupath./$emulator $r
+[  -e "romlist.tmp" ] && rm romlist.tmp
+[ -e "clean.tmp" ] && rm clean.tmp
+[ -e "array.tmp" ] && rm array.tmp
+[ -e "dialog.tmp" ] && rm dialog.tmp
+#rm romlist.tmp clean.tmp array.tmp dialog.tmp # un peu de ménage
+$emupath./$emulator $rompath$r
+export EMUPID=$emulator
+echo $EMUPID
+export PIDSHELL=$$
+echo $PIDSHELL
+emupidd &
+else
+bash flashcode
+fi
 exit 0

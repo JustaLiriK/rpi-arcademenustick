@@ -1,0 +1,38 @@
+#!/bin/bash
+#version 0.1
+dialog --clear
+dialog --no-cancel --no-ok --menu "Flasher l'emulateur" 10 30 4 \
+ 1 "Capcom systems" 2 "Super Nintendo" \
+ 3 "Neo Geo" 4 "Mame" \
+ 2>dialog.tmp 
+E=$(cat dialog.tmp)
+	case $E in
+		1 ) dialog --clear 
+			dialog --no-ok --no-cancel \
+	 		--inputbox "Flasher la rom" 10 60 \
+			 2>dialog.tmp
+			D=$(cat dialog.tmp)
+			/home/pi/raspfba/./fba2x roms/$D.zip  ;;
+		
+		2) dialog --clear 
+			dialog --no-ok --no-cancel \
+			 --inputbox "Flasher la rom" 10 60 \
+			 2>dialog.tmp
+			D=$(cat dialog.tmp)
+			/home/pi/snes9x-xinmo/./snes9x roms/$D.zip	;;
+		
+		3) dialog --clear
+			dialog --no-ok --no-cancel \
+			--inputbox "Flasher la rom" 10 60 \
+			 2>dialog.tmp
+			D=$(cat dialog.tmp)
+			/home/pi/fbaneogeo/./fba2x roms/$D.zip ;;
+		
+		4) dialog --clear 
+                        dialog --no-ok --no-cancel \
+                        --inputbox "Flasher la rom" 10 60 \
+                         2>dialog.tmp
+                        D=$(cat dialog.tmp)
+			/home/pi/mame4all-pi/./mame $D ;;
+		esac 
+exit 0

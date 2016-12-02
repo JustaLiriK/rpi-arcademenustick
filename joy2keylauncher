@@ -1,0 +1,10 @@
+#!/bin/bash
+sleep 1 
+cd $HOME/script/shell/emulmenu.0.9/
+joy2key LXTerminal -config emulmenu 1>/dev/null & 
+./emulmenu 
+exit 0
+
+
+
+

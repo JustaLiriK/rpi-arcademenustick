@@ -1,0 +1,10 @@
+#Using deadzone of 50%
+#Calibrations set at:
+#Axis 1 low threshold set at -16383
+#Axis 1 high threshold set at 16383
+START emulmenu
+-X
+-thresh -16383 16383 -16383 16383
+-deadzone 50
+-axis Left Right Up Down
+-buttons  Ctrl Ctrl Ctrl Ctrl Escape Ctrl Return Ctrl

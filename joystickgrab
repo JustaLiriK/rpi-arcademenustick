@@ -1,38 +1,38 @@
 #!/bin/bash
 # Version 0.7
 #memo index  boutons start et select dans jstest ne pas decommenter
-#START=8	
-#SELECT=9
+#START=6
+#SELECT=4
 #memo index axes verticaux et horizontaux dans jstest  ne pas decommenter
-#VERTICAL=5
-#HORIZONTAL=4
-#GRAB='number 4, value -32767'
+#VERTICAL=1
+#HORIZONTAL=0
+#GRAB='number 1, value -32767'
 #jstest --event /dev/input/js0 >grab.txt
-while test $$ -gt 0
+while test $$ -gt 0 
 do 
-for GRAB in "number 5, value -32767" "number 5, value 32767" \
-"number 8, value 1" "number 9, value 1" "number 4, value -32767" \
-"number 4, value 32767"
+for GRAB in "number 0, value -32767" "number 0, value 32767" \ #axehorizontal
+"number 4, value 1" "number 6, value 1"\ #escape return
+ "number 1, value -32767" "number 1, value 32767" #axevertical
 do
 #echo $GRAB
 function joy()
 {
-jstest --event /dev/input/js0 &
+jstest --event /dev/input/js0
 } 
-joy > grab2.txt
-sleep 1
-PID=$(ps -e | grep jstest | cut -c 1-5) >/dev/null 
-sudo kill $PID >/dev/null
-MATCH=$(grep -w "${GRAB}" grab2.txt | cut -c 32-)
+joy 1>grab2.txt
+sleep 1 
+PID=$(ps -e | grep jstest | cut -c 1-5) >/dev/null 2>&1 
+sudo kill $PID 1>/dev/null
+MATCH=$(grep -w "${GRAB}" grab2.txt | cut -c 32-) >/dev/null 2>&1
 case $MATCH in 
-"number 5, value -32767" ) xdotool key Up ;;
-"number 5, value 32767" ) xdotool key Down ;;
-"number 4, value -32767" ) xdotool key Left ;;
-"number 4, value 32767" ) xdotool key Right ;;
-"number 8, value 1" ) xdotool key Return  ;;
-"number 9, value 1" ) xdotool key Escape ;;
+"number 1, value -32767" ) xdotool key Up ;;
+"number 1, value 32767" ) xdotool key Down ;;
+"number 0, value -32767" ) xdotool key Left ;;
+"number 0, value 32767" ) xdotool key Right ;;
+"number 6, value 1" ) xdotool key Return  ;;
+"number 4, value 1" ) xdotool key Escape ;;
 esac
 done
 done
-rm grab.tx grab2.txt
 exit 0
+
